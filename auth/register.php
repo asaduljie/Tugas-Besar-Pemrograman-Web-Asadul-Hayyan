@@ -6,27 +6,40 @@ $msg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $username = trim($_POST['username']);
-    $password = $_POST['password']; 
+    $email    = trim($_POST['email']);
+    $password = $_POST['password'];
     $role     = $_POST['role'];
 
-    $check = $mysqli->prepare("SELECT id FROM users WHERE username=? LIMIT 1");
-    $check->bind_param("s", $username);
-    $check->execute();
-    $exists = $check->get_result();
-
-    if ($exists->num_rows > 0) {
-        $msg = "Username sudah digunakan!";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $msg = "Format email tidak valid!";
     } else {
-        $stmt = $mysqli->prepare("INSERT INTO users (username,password,role) VALUES (?,?,?)");
-        $stmt->bind_param("sss", $username, $password, $role);
-        $stmt->execute();
 
-        $msg = "Akun berhasil dibuat. Silakan login.";
+        $checkUser = $mysqli->prepare("SELECT id FROM users WHERE username=? LIMIT 1");
+        $checkUser->bind_param("s", $username);
+        $checkUser->execute();
+        $userExists = $checkUser->get_result();
+
+        $checkEmail = $mysqli->prepare("SELECT id FROM users WHERE email=? LIMIT 1");
+        $checkEmail->bind_param("s", $email);
+        $checkEmail->execute();
+        $emailExists = $checkEmail->get_result();
+
+        if ($userExists->num_rows > 0) {
+            $msg = "Username sudah digunakan!";
+        } else if ($emailExists->num_rows > 0) {
+            $msg = "Email sudah digunakan!";
+        } else {
+
+            $stmt = $mysqli->prepare("INSERT INTO users (username, email, password, role) VALUES (?,?,?,?)");
+            $stmt->bind_param("ssss", $username, $email, $password, $role);
+            $stmt->execute();
+
+            $msg = "Akun berhasil dibuat. Silakan login.";
+        }
     }
 }
 ?>
 
-?>
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -48,6 +61,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <label>Username
                 <input type="text" name="username" required>
+            </label>
+
+            <label>Email
+                <input type="email" name="email" required>
             </label>
 
             <label>Password

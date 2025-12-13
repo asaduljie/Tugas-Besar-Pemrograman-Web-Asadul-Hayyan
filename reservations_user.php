@@ -27,121 +27,164 @@ $reservations = $stmt->get_result();
     <meta charset="utf-8">
     <title>Reservasi Saya</title>
     <link rel="stylesheet" href="public/css/styles.css">
+
+    <style>
+        .action-group {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .btn-action {
+            padding: 7px 12px;
+            border-radius: 8px;
+            border: 2px solid #d0c8ff;
+            background: white;
+            color: #5a2ecc;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .btn-action:hover {
+            background: #f4f0ff;
+            border-color: #b49cff;
+        }
+        .btn-green {
+            border-color: #7ed957;
+            color: #2e7d32;
+        }
+        .btn-blue {
+            border-color: #4a77ff;
+            color: #1a3cff;
+        }
+        .btn-delete {
+            border-color: #ff6b6b;
+            color: #c62828;
+        }
+    </style>
+
 </head>
 
 <body>
 
-    <?php include 'layouts/navbar.php'; ?>
+<?php include 'layouts/navbar.php'; ?>
 
-    <div class="container layout">
+<div class="container layout">
 
-        <?php include 'layouts/sidebar.php'; ?>
+    <?php include 'layouts/sidebar.php'; ?>
 
-        <main class="main-content">
+    <main class="main-content">
 
-            <h1>Reservasi Saya</h1>
+        <h1>Reservasi Saya</h1>
 
-            <?php if (isset($_GET['success'])): ?>
-                <div class="popup-success" id="popupSuccess">
-                    <p>Reservasi berhasil dibuat!</p>
-                </div>
-                <script>
-                    setTimeout(() => {
-                        document.getElementById("popupSuccess").style.opacity = 0;
-                    }, 2500);
-                </script>
-            <?php endif; ?>
+        <?php if (isset($_GET['success'])): ?>
+            <div class="popup-success" id="popupSuccess">
+                <p>Reservasi berhasil dibuat!</p>
+            </div>
+            <script>
+                setTimeout(() => {
+                    document.getElementById("popupSuccess").style.opacity = 0;
+                }, 2500);
+            </script>
+        <?php endif; ?>
 
-            <?php if (isset($_GET['canceled'])): ?>
-                <div class="popup-success" id="popupCanceled">
-                    <p>❌ Reservasi berhasil dibatalkan.</p>
-                </div>
-                <script>
-                    setTimeout(() => {
-                        document.getElementById("popupCanceled").style.opacity = 0;
-                    }, 2500);
-                </script>
-            <?php endif; ?>
+        <?php if ($reservations->num_rows == 0): ?>
+            <p class="muted">Anda belum melakukan reservasi.</p>
 
-            <?php if ($reservations->num_rows == 0): ?>
-                <p class="muted">Anda belum melakukan reservasi.</p>
+        <?php else: ?>
 
-            <?php else: ?>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Paket</th>
+                        <th>Tanggal</th>
+                        <th>Status</th>
+                        <th>Metode</th>
+                        <th>Bukti</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
 
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Paket</th>
-                            <th>Tanggal</th>
-                            <th>Status</th>
-                            <th>Metode</th>
-                            <th>Bukti</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
+                <tbody>
+                    <?php while ($row = $reservations->fetch_assoc()): ?>
 
-                    <tbody>
-                        <?php while ($row = $reservations->fetch_assoc()): ?>
-                            <tr>
-                                <td><?= htmlspecialchars($row['title']) ?></td>
-                                <td><?= $row['created_at'] ?></td>
+                    <?php 
+                        $status = strtolower($row['payment_status']);
+                        $status_label = [
+                            'waiting' => 'Menunggu Verifikasi',
+                            'approved' => 'Disetujui',
+                            'rejected' => 'Ditolak'
+                        ][$status] ?? $row['payment_status'];
+                    ?>
 
-                                <td>
-                                    <span class="status-badge status-<?= strtolower($row['payment_status']) ?>">
-                                        <?= ucfirst($row['payment_status']) ?>
-                                    </span>
-                                </td>
+                    <tr>
+                        <td><?= htmlspecialchars($row['title']) ?></td>
+                        <td><?= $row['created_at'] ?></td>
 
-                                <td><?= $row['payment_method'] ?: "-" ?></td>
+                        <td>
+                            <span class="status-badge status-<?= $status ?>">
+                                <?= $status_label ?>
+                            </span>
+                        </td>
 
-                                <td>
-                                    <?php if ($row['payment_proof']): ?>
-                                        <img src="<?= $row['payment_proof'] ?>" class="payment-proof-img">
-                                    <?php else: ?>
-                                        <span class="muted">Belum upload</span>
-                                    <?php endif; ?>
-                                </td>
+                        <td><?= $row['payment_method'] ?: "-" ?></td>
 
-                                <td>
-                                    <?php if (strtolower($row['payment_status']) === 'pending'): ?>
+                        <td>
+                            <?php if ($row['payment_proof']): ?>
+                                <img src="<?= $row['payment_proof'] ?>" class="payment-proof-img">
+                            <?php else: ?>
+                                <span class="muted">Belum upload</span>
+                            <?php endif; ?>
+                        </td>
 
-                                        <a href="payment_upload.php?id=<?= $row['id'] ?>" class="btn-sm">
-                                            Upload Pembayaran
-                                        </a>
+                        <td>
+                            <div class="action-group">
 
-                                        <a href="reservation_cancel.php?id=<?= $row['id'] ?>"
-                                            onclick="return confirm('Batalkan reservasi ini?')" class="btn-delete">
-                                            Batalkan
-                                        </a>
+                                <!-- CETAK INVOICE SELALU ADA -->
+                                <a href="invoice.php?id=<?= $row['id'] ?>" class="btn-action btn-green">
+                                    Cetak Invoice
+                                </a>
 
-                                    <?php elseif (strtolower($row['payment_status']) === 'menunggu verifikasi'): ?>
-                                        <span class="muted">Menunggu verifikasi admin</span>
+                                <!-- PENDING = upload bukti & batal -->
+                                <?php if ($status === 'pending'): ?>
 
-                                    <?php elseif (strtolower($row['payment_status']) === 'success'): ?>
-                                        <span class="muted">Pembayaran Selesai</span>
+                                    <a href="payment_upload.php?id=<?= $row['id'] ?>" class="btn-action">
+                                        Upload Pembayaran
+                                    </a>
 
-                                    <?php elseif (strtolower($row['payment_status']) === 'gagal'): ?>
-                                        <span class="muted">Pembayaran Ditolak</span>
+                                    <a href="reservation_cancel.php?id=<?= $row['id'] ?>"
+                                       onclick="return confirm('Batalkan reservasi ini?')"
+                                       class="btn-delete">
+                                       Batalkan
+                                    </a>
 
-                                    <?php else: ?>
-                                        <span class="muted">Tidak ada aksi</span>
-                                    <?php endif; ?>
-                                </td>
+                                <!-- APPROVED = bisa cetak tiket -->
+                                <?php elseif ($status === 'approved'): ?>
 
+                                    <a href="ticket.php?id=<?= $row['id'] ?>" class="btn-action btn-blue">
+                                        Cetak Tiket
+                                    </a>
 
-                            </tr>
-                        <?php endwhile; ?>
-                    </tbody>
-                </table>
+                                <?php elseif ($status === 'rejected'): ?>
 
-            <?php endif; ?>
+                                    <span class="muted">Pembayaran Ditolak</span>
 
-        </main>
+                                <?php endif; ?>
 
-    </div>
+                            </div>
+                        </td>
 
-    <?php include 'layouts/footer.php'; ?>
+                    </tr>
+                    <?php endwhile; ?>
+                </tbody>
+            </table>
+
+        <?php endif; ?>
+
+    </main>
+
+</div>
+
+<?php include 'layouts/footer.php'; ?>
 
 </body>
-
 </html>

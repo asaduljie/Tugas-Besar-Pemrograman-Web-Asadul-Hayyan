@@ -19,9 +19,9 @@ $stmt->bind_param("si", $status, $id);
 $stmt->execute();
 
 if ($action === "approve") {
-    header("Location: reservations_admin.php?verified=1");
+    header("Location: admin_reservations.php?verified=1");
 } else {
-    header("Location: reservations_admin.php?rejected=1");
+    header("Location: admin_reservations.php?rejected=1");
 }
 exit;
 ?>

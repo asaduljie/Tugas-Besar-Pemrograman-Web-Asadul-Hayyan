@@ -65,12 +65,7 @@ $role = $_SESSION['role'] ?? null;
           Manajemen User
         </a>
       </li>
-
-      <li>
-        <a href="init_db.php" class="<?= $current=='init_db.php'?'active':'' ?>">
-          Inisialisasi DB
-        </a>
-      </li>
+      
     <?php endif; ?>
 
   </ul>

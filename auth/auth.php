@@ -5,11 +5,12 @@ $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $username = $_POST['username'];
+    $login_id = trim($_POST['login_id']);
     $password = $_POST['password'];
 
-    $stmt = $mysqli->prepare("SELECT id, username, password, role FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
+    $stmt = $mysqli->prepare("SELECT id, username, email, password, role FROM users 
+                              WHERE username = ? OR email = ? LIMIT 1");
+    $stmt->bind_param("ss", $login_id, $login_id);
     $stmt->execute();
     $res = $stmt->get_result();
 
@@ -18,9 +19,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($password === $u['password']) {
 
-            $_SESSION['user_id'] = $u['id'];
+            $_SESSION['user_id']  = $u['id'];
             $_SESSION['username'] = $u['username'];
-            $_SESSION['role'] = $u['role'];
+            $_SESSION['email']    = $u['email'];
+            $_SESSION['role']     = $u['role'];
 
             if ($u['role'] === 'admin') {
                 header("Location: ../admin_dashboard.php");
@@ -31,7 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    $error = "Username atau password salah!";
+    $error = "ID Login atau password salah!";
 }
 ?>
 
@@ -54,8 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <form action="" method="POST">
 
-            <label>Username
-                <input type="text" name="username" required>
+            <label>Email atau Username
+                <input type="text" name="login_id" required>
             </label>
 
             <label>Password

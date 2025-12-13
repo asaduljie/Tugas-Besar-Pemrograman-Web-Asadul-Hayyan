@@ -17,7 +17,7 @@ $target = $folder . $fileName;
 move_uploaded_file($_FILES["payment_proof"]["tmp_name"], $target);
 
 $sql = "UPDATE reservations 
-        SET payment_method = ?, payment_proof = ?, payment_status = 'Menunggu Verifikasi'
+        SET payment_method = ?, payment_proof = ?, payment_status = 'waiting'
         WHERE id = ? AND user_id = ?";
 
 $stmt = $mysqli->prepare($sql);

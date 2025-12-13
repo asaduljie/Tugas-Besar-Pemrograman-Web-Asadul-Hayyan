@@ -885,6 +885,132 @@ body {
     background: #dc3545;
 }
 
+.btn-green {
+    background: #27ae60;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.btn-blue {
+    background: #2980b9;
+    color: white;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+}
+
+.payment-proof-img {
+    width: 70px;
+    border-radius: 6px;
+}
+
+.back-btn {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 12px 18px;
+    background: #777;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.back-btn:hover {
+    background: #555;
+}
+
+@media print {
+    .back-btn { display: none; }
+}
+
+.action-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 2px solid #d0c8ff;
+    background: white;
+    color: #5a2ecc;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-block;
+    transition: 0.2s;
+}
+
+.btn-action:hover {
+    background: #f4f0ff;
+    border-color: #b49cff;
+}
+
+.btn-delete {
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: 2px solid #ff6b6b;
+    background: #ffecec;     
+    color: #d03a3a;         
+    font-weight: 600;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-delete:hover {
+    background: #ffb3b3;     
+    border-color: #ff4a4a;
+    color: #a81818;
+}
+
+<style>
+    .aksi-col {
+        width: 260px; 
+        white-space: nowrap;
+    }
+
+    .aksi-buttons {
+        display: flex;
+        gap: 8px;
+    }
+
+    .btn-approve, .btn-reject {
+        padding: 8px 14px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-approve {
+        background: #28a745;
+    }
+
+    .btn-reject {
+        background: #dc3545;
+    }
+
+    .btn-approve:hover {
+        background: #218838;
+    }
+
+    .btn-reject:hover {
+        background: #c82333;
+    }
+
+    .payment-proof-img {
+        width: 70px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+</style>
+
+
 
 
 

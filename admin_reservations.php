@@ -37,7 +37,7 @@ $reservations = $mysqli->query($sql);
         }
         .btn-approve { background: #28a745; }
         .btn-reject { background: #dc3545; }
-        .payment-proof-img { width: 70px; border-radius: 6px; }
+        .payment-proof-img { width: 70px; border-radius: 6px; cursor: pointer; }
     </style>
 </head>
 
@@ -98,22 +98,24 @@ $reservations = $mysqli->query($sql);
 
                     <td>
                         <?php if ($row['payment_proof']): ?>
-                            <img src="<?= $row['payment_proof'] ?>" class="payment-proof-img">
+                            <a href="<?= $row['payment_proof'] ?>" target="_blank">
+                                <img src="<?= $row['payment_proof'] ?>" class="payment-proof-img">
+                            </a>
                         <?php else: ?>
                             <span class="muted">Belum upload</span>
                         <?php endif; ?>
                     </td>
 
-                    <td class="aksi-col">
-                        <?php if ($status === 'waiting'): ?>
-
-                            <a href="payment_approve.php?id=<?= $row['id'] ?>" class="btn-approve">✔ Setujui</a>
-                            <a href="payment_reject.php?id=<?= $row['id'] ?>" class="btn-reject">✖ Tolak</a>
-
-                        <?php else: ?>
-                            <span class="muted">Tidak ada aksi</span>
-                        <?php endif; ?>
-                    </td>
+<td class="aksi-col">
+    <?php if ($status === 'waiting'): ?>
+        <div class="aksi-buttons">
+            <a href="payment_approve.php?id=<?= $row['id'] ?>" class="btn-approve">✔ Setujui</a>
+            <a href="payment_reject.php?id=<?= $row['id'] ?>" class="btn-reject">✖ Tolak</a>
+        </div>
+    <?php else: ?>
+        <span class="muted">Tidak ada aksi</span>
+    <?php endif; ?>
+</td>
 
                 </tr>
                 <?php endwhile; ?>
